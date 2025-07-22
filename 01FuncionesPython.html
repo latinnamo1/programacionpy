@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Functions: Video Game Tutorial</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #f0f0f0;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            position: relative;
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            color: #ff6b6b;
+            text-shadow: 0 0 15px rgba(255, 107, 107, 0.7);
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, #ff6b6b, #ffb142, #0be881);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: glow 1.5s ease-in-out infinite alternate;
+        }
+        
+        .subtitle {
+            font-size: 1.4rem;
+            max-width: 800px;
+            margin: 0 auto 30px;
+            color: #a9b7c6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .level-card {
+            background: rgba(25, 25, 40, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .level-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+        }
+        
+        .level-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+        }
+        
+        .basic::before { background: #00ff9d; }
+        .basic-plus::before { background: #ffdd59; }
+        .intermediate::before { background: #ff9f1a; }
+        .intermediate-plus::before { background: #48dbfb; }
+        .intermediate-plus-plus::before { background: #9b59b6; }
+        
+        .level-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+        
+        .level-title i {
+            margin-right: 15px;
+            font-size: 2rem;
+        }
+        
+        .level-card h3 {
+            font-size: 1.5rem;
+            margin: 20px 0 10px;
+            color: #48dbfb;
+        }
+        
+        .analogy {
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 4px solid #ff6b6b;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+        }
+        
+        .code-block {
+            background: #2d3436;
+            color: #dfe6e9;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            overflow-x: auto;
+            margin: 15px 0;
+            border: 1px solid #636e72;
+        }
+        
+        .code-keyword { color: #48dbfb; }
+        .code-function { color: #00ff9d; }
+        .code-string { color: #ff9f1a; }
+        .code-comment { color: #636e72; }
+        
+        .advantages {
+            grid-column: 1 / -1;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            border: 1px solid rgba(0, 255, 157, 0.3);
+            position: relative;
+        }
+        
+        .advantage-card {
+            background: rgba(25, 25, 40, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            width: 45%;
+            margin: 10px;
+            min-width: 250px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .advantage-card i {
+            font-size: 2.5rem;
+            color: #00ff9d;
+            margin-bottom: 15px;
+        }
+        
+        .game-characters {
+            position: absolute;
+            bottom: -50px;
+            right: -50px;
+            opacity: 0.1;
+            z-index: -1;
+        }
+        
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #ff6b6b, 0 0 20px #ff6b6b; }
+            to { text-shadow: 0 0 20px #ff6b6b, 0 0 30px #ff6b6b, 0 0 40px #ff6b6b; }
+        }
+        
+        .highlight {
+            color: #00ff9d;
+            font-weight: bold;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: #a9b7c6;
+            font-size: 0.9rem;
+        }
+        
+        .hero {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .hero h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #48dbfb;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 25px;
+        }
+        
+        .console {
+            display: inline-block;
+            background: #000;
+            color: #0f0;
+            font-family: monospace;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin: 10px 0;
+            text-align: left;
+            max-width: 100%;
+            overflow: hidden;
+        }
+        
+        .console::after {
+            content: "|";
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        
+        .pixel-art {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            width: 100px;
+            height: 100px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="%23ff6b6b" x="20" y="20" width="20" height="20"/><rect fill="%2300ff9d" x="40" y="20" width="20" height="20"/><rect fill="%2348dbfb" x="60" y="20" width="20" height="20"/><rect fill="%239b59b6" x="40" y="40" width="20" height="20"/><rect fill="%23ffdd59" x="40" y="60" width="20" height="20"/></svg>');
+            opacity: 0.2;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><i class="fas fa-code"></i> Python Functions</h1>
+        <p class="subtitle">Aprende a usar funciones en Python como si estuvieras jugando un videojuego</p>
+        <div class="console">>> mostrar_inicio()<br>🎮 Bienvenido al juego de aventuras épicas!</div>
+    </header>
+    
+    <div class="hero">
+        <div class="hero-content">
+            <h2>¿Qué es una función en Python?</h2>
+            <p>Una <span class="highlight">función</span> es un bloque de código que realiza una tarea específica. Puedes <span class="highlight">reutilizarlo</span> cuando quieras, sin tener que escribirlo de nuevo. Es como un <span class="highlight">"poder especial"</span> que usas en tu videojuego: lo activas cuando lo necesitas.</p>
+        </div>
+        <div class="pixel-art"></div>
+    </div>
+    
+    <div class="container">
+        <!-- Level 1 -->
+        <div class="level-card basic">
+            <div class="level-title">
+                <i class="fas fa-gamepad"></i>
+                <h2>Nivel Básico: Crear y usar funciones</h2>
+            </div>
+            
+            <h3>Sintaxis básica</h3>
+            <div class="code-block">
+                <span class="code-keyword">def</span> <span class="code-function">nombre_de_la_funcion</span>():<br>
+                &nbsp;&nbsp;<span class="code-comment"># instrucciones</span><br>
+                &nbsp;&nbsp;<span class="code-keyword">pass</span>
+            </div>
+            
+            <h3>Ejemplo: Mostrar mensaje de inicio de juego</h3>
+            <div class="code-block">
+                <span class="code-keyword">def</span> <span class="code-function">mostrar_inicio</span>():<br>
+                &nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">"🎮 Bienvenido al juego de aventuras épicas!"</span>)<br><br>
+                <span class="code-function">mostrar_inicio</span>()  <span class="code-comment"># Llamamos a la función</span>
+            </div>
+            
+            <div class="analogy">
+                <i class="fas fa-tv"></i> <strong>Analogía en videojuegos:</strong> Es como mostrar la <strong>pantalla de inicio</strong> cada vez que cargas el juego.
+            </div>
+        </div>
+        
+        <!-- Level 2 -->
+        <div class="level-card basic-plus">
+            <div class="level-title">
+                <i class="fas fa-level-up-alt"></i>
+                <h2>Nivel Básico+: Funciones con parámetros</h2>
+            </div>
+            
+            <h3>¿Qué son los parámetros?</h3>
+            <p>Son datos que le <strong>entregas a la función</strong> para que pueda trabajar con ellos.</p>
+            
+            <div class="code-block">
+                <span class="code-keyword">def</span> <span class="code-function">mostrar_puntaje</span>(nombre, puntaje):<br>
+                &nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">f"{nombre}, tu puntaje es: {puntaje}"</span>)
+            </div>
+            
+            <h3>Ejemplo:</h3>
+            <div class="code-block">
+                <span class="code-function">mostrar_puntaje</span>(<span class="code-string">"Mario"</span>, <span class="code-number">1500</span>)<br>
+                <span class="code-function">mostrar_puntaje</span>(<span class="code-string">"Luigi"</span>, <span class="code-number">1200</span>)
+            </div>
+            
+            <div class="analogy">
+                <i class="fas fa-trophy"></i> <strong>Analogía en videojuegos:</strong> Como cuando aparece el marcador final con el nombre del jugador y su puntuación.
+            </div>
+        </div>
+        
+        <!-- Level 3 -->
+        <div class="level-card intermediate">
+            <div class="level-title">
+                <i class="fas fa-heart"></i>
+                <h2>Nivel Intermedio: Funciones que retornan valores</h2>
+            </div>
+            
+            <h3>¿Qué es <code>return</code>?</h3>
+            <p>Sirve para <strong>devolver un valor</strong> desde la función al lugar donde fue llamada.</p>
+            
+            <div class="code-block">
+                <span class="code-keyword">def</span> <span class="code-function">calcular_vida_restante</span>(vida_inicial, daño):<br>
+                &nbsp;&nbsp;<span class="code-keyword">return</span> vida_inicial - daño
+            </div>
+            
+            <h3>Ejemplo:</h3>
+            <div class="code-block">
+                vida_actual = <span class="code-function">calcular_vida_restante</span>(<span class="code-number">100</span>, <span class="code-number">30</span>)<br>
+                <span class="code-keyword">print</span>(<span class="code-string">"Vida restante:"</span>, vida_actual)
+            </div>
+            
+            <div class="analogy">
+                <i class="fas fa-heartbeat"></i> <strong>Analogía en videojuegos:</strong> Como calcular cuánta <strong>vida</strong> le queda al personaje después de ser atacado.
+            </div>
+        </div>
+        
+        <!-- Level 4 -->
+        <div class="level-card intermediate-plus">
+            <div class="level-title">
+                <i class="fas fa-crown"></i>
+                <h2>Nivel Intermedio+: Funciones con lógica condicional</h2>
+            </div>
+            
+            <h3>Ejemplo: Verificar si el jugador ha ganado</h3>
+            <div class="code-block">
+                <span class="code-keyword">def</span> <span class="code-function">verificar_ganador</span>(puntos):<br>
+                &nbsp;&nbsp;<span class="code-keyword">if</span> puntos >= <span class="code-number">1000</span>:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">return</span> <span class="code-string">"¡Has ganado!"</span><br>
+                &nbsp;&nbsp;<span class="code-keyword">else</span>:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">return</span> <span class="code-string">"Sigue jugando..."</span>
+            </div>
+            
+            <div class="code-block">
+                resultado = <span class="code-function">verificar_ganador</span>(<span class="code-number">850</span>)<br>
+                <span class="code-keyword">print</span>(resultado)
+            </div>
+            
+            <div class="analogy">
+                <i class="fas fa-flag-checkered"></i> <strong>Analogía en videojuegos:</strong> Como cuando el juego evalúa si lograste una puntuación suficiente para <strong>pasar de nivel</strong>.
+            </div>
+        </div>
+        
+        <!-- Level 5 -->
+        <div class="level-card intermediate-plus-plus">
+            <div class="level-title">
+                <i class="fas fa-fist-raised"></i>
+                <h2>Nivel Intermedio++: Funciones dentro de funciones</h2>
+            </div>
+            
+            <h3>Ejemplo: Atacar a un enemigo</h3>
+            <div class="code-block">
+                <span class="code-keyword">def</span> <span class="code-function">calcular_daño</span>(ataque, defensa):<br>
+                &nbsp;&nbsp;<span class="code-keyword">return</span> max(<span class="code-number">0</span>, ataque - defensa)<br><br>
+                
+                <span class="code-keyword">def</span> <span class="code-function">atacar_enemigo</span>(jugador_ataque, enemigo_defensa):<br>
+                &nbsp;&nbsp;daño = <span class="code-function">calcular_daño</span>(jugador_ataque, enemigo_defensa)<br>
+                &nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">f"💥 Has causado {daño} puntos de daño."</span>)
+            </div>
+            
+            <div class="code-block">
+                <span class="code-function">atacar_enemigo</span>(<span class="code-number">50</span>, <span class="code-number">20</span>)
+            </div>
+            
+            <div class="analogy">
+                <i class="fas fa-people-arrows"></i> <strong>Analogía en videojuegos:</strong> Una función calcula el daño, y otra muestra el resultado: <strong>trabajan en equipo</strong>, como un combo.
+            </div>
+        </div>
+        
+        <!-- Advantages Section -->
+        <div class="advantages">
+            <h2 style="width: 100%; text-align: center; margin-bottom: 30px; color: #00ff9d;">
+                <i class="fas fa-star"></i> Ventajas de usar funciones en tus juegos
+            </h2>
+            
+            <div class="advantage-card">
+                <i class="fas fa-sitemap"></i>
+                <h3>Organizan mejor tu código</h3>
+                <p>Divide tu juego en módulos lógicos y fáciles de entender</p>
+            </div>
+            
+            <div class="advantage-card">
+                <i class="fas fa-redo-alt"></i>
+                <h3>Evitan repetir instrucciones</h3>
+                <p>Define una vez y reutiliza en cualquier parte de tu juego</p>
+            </div>
+            
+            <div class="advantage-card">
+                <i class="fas fa-tools"></i>
+                <h3>Más fácil de mantener y mejorar</h3>
+                <p>Corrige errores en un solo lugar en lugar de buscar en todo el código</p>
+            </div>
+            
+            <div class="advantage-card">
+                <i class="fas fa-share-alt"></i>
+                <h3>Compartir entre niveles del juego</h3>
+                <p>Usa las mismas funciones en diferentes niveles o escenarios</p>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>🎮 Tutorial interactivo de funciones en Python | Diseñado para desarrolladores de juegos</p>
+        <p>✨ Aprende a programar mientras juegas | ¡Sube de nivel tus habilidades!</p>
+    </footer>
+    
+    <div class="game-characters">
+        <i class="fas fa-dragon fa-10x"></i>
+        <i class="fas fa-ghost fa-10x"></i>
+        <i class="fas fa-knight fa-10x"></i>
+    </div>
+
+    <script>
+        // Add a simple animation to level cards on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.level-card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(50px)';
+                    card.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+                    
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, 100);
+                }, 200 * index);
+            });
+            
+            // Add blinking cursor effect to console
+            const consoleElement = document.querySelector('.console');
+            setInterval(() => {
+                if (consoleElement.innerHTML.includes('|')) {
+                    consoleElement.innerHTML = consoleElement.innerHTML.replace('|', '');
+                } else {
+                    consoleElement.innerHTML += '|';
+                }
+            }, 500);
+        });
+    </script>
+</body>
+</html>
