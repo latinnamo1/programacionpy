@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Funciones Python - Videojuego de Programación</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #e0e0ff;
+            font-family: 'Roboto Mono', monospace;
+            line-height: 1.6;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(0, 255, 100, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 80% 70%, rgba(255, 0, 255, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 40% 80%, rgba(255, 255, 0, 0.1) 0%, transparent 20%);
+            z-index: -1;
+        }
+
+        .game-header {
+            text-align: center;
+            padding: 30px 20px;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #00ff41;
+            position: relative;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+        }
+
+        .game-header h1 {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 2.8rem;
+            color: #00ff41;
+            text-shadow: 0 0 10px #00ff41, 0 0 20px #00ff41;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+        }
+
+        .game-header p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            color: #a0f0ff;
+            line-height: 1.8;
+        }
+
+        .level-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .level-card {
+            background: rgba(20, 25, 45, 0.9);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 0 15px rgba(0, 200, 255, 0.2);
+            border: 2px solid;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .level-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #ff00ff, #00ffff, #ffff00);
+        }
+
+        .level-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 0 25px rgba(0, 200, 255, 0.4);
+        }
+
+        .level-card.level-1 { border-color: #ff5555; }
+        .level-card.level-2 { border-color: #5555ff; }
+        .level-card.level-3 { border-color: #55ff55; }
+        .level-card.level-4 { border-color: #ffff55; }
+        .level-card.level-5 { border-color: #ff55ff; }
+        .level-card.level-6 { border-color: #55ffff; }
+        .level-card.level-7 { border-color: #aa55ff; }
+        .level-card.level-8 { border-color: #ffaa55; }
+        .level-card.level-9 { border-color: #55aaff; }
+        .level-card.level-10 { border-color: #55ffaa; }
+        .level-card.level-11 { border-color: #ff55aa; }
+        .level-card.level-12 { border-color: #55aaaa; }
+        .level-card.level-13 { border-color: #ff6b6b; }
+        .level-card.level-14 { border-color: #cc55ff; }
+        .level-card.level-15 { border-color: #5555aa; }
+
+        .level-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(100, 200, 255, 0.3);
+        }
+
+        .level-icon {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin-right: 15px;
+            font-size: 1.5rem;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .level-title {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.4rem;
+            color: #ffcc00;
+        }
+
+        .level-description {
+            margin-bottom: 20px;
+            color: #c0c0ff;
+            line-height: 1.7;
+        }
+
+        .code-block {
+            background: #011627;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+            border: 1px solid rgba(0, 150, 255, 0.3);
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            position: relative;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(100, 200, 255, 0.2);
+        }
+
+        .code-lang {
+            color: #ff9d00;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .copy-btn {
+            background: rgba(0, 200, 255, 0.2);
+            color: #00ccff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        .copy-btn:hover {
+            background: rgba(0, 200, 255, 0.4);
+        }
+
+        .code-content {
+            color: #d6deeb;
+        }
+
+        .code-keyword { color: #c792ea; }
+        .code-function { color: #82aaff; }
+        .code-string { color: #ecc48d; }
+        .code-comment { color: #637777; font-style: italic; }
+        .code-number { color: #f78c6c; }
+        .code-operator { color: #89ddff; }
+
+        .challenges {
+            background: rgba(10, 25, 47, 0.6);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid #ffcc00;
+        }
+
+        .challenges h3 {
+            color: #ffcc00;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .challenges h3 i {
+            margin-right: 10px;
+        }
+
+        .challenges ul {
+            padding-left: 25px;
+        }
+
+        .challenges li {
+            margin-bottom: 12px;
+            color: #a0f0ff;
+            position: relative;
+        }
+
+        .challenges li::before {
+            content: "▹";
+            color: #ffcc00;
+            position: absolute;
+            left: -20px;
+        }
+
+        .game-footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: #88aaff;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(100, 200, 255, 0.2);
+        }
+
+        .game-progress {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .progress-bar {
+            width: 80%;
+            max-width: 600px;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid rgba(100, 200, 255, 0.3);
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, #ff00ff, #00ffff);
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.2), 
+                transparent);
+            animation: progress-shine 2s infinite;
+        }
+
+        @keyframes progress-shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.8rem;
+            text-shadow: 0 0 3px black;
+        }
+
+        .achievement-badge {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #ff8c00, #ff0080);
+            color: white;
+            padding: 15px;
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(255, 0, 128, 0.7);
+            animation: pulse 2s infinite;
+            z-index: 100;
+            text-align: center;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .achievement-badge i {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .achievement-badge span {
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .hud {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px 15px;
+            border-radius: 10px;
+            border: 2px solid #00ff41;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.8rem;
+            color: #00ff41;
+            z-index: 100;
+        }
+
+        @media (max-width: 768px) {
+            .level-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .game-header h1 {
+                font-size: 2rem;
+            }
+            
+            .level-title {
+                font-size: 1.1rem;
+            }
+            
+            .achievement-badge {
+                top: 10px;
+                right: 10px;
+                width: 50px;
+                height: 50px;
+                font-size: 0.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="hud">
+        NIVEL: 15 | PUNTOS: 1500 | VIDA: 100%
+    </div>
+    
+    <div class="achievement-badge">
+        <i class="fas fa-trophy"></i>
+        <span>MASTER</span>
+    </div>
+
+    <div class="game-header">
+        <h1><i class="fas fa-code"></i> FUNCIONES PYTHON</h1>
+        <p>Domina el poder de las funciones en Python con estos 15 ejercicios de temática videojuegos. Cada función es una habilidad especial que puedes activar cuando la necesites.</p>
+    </div>
+
+    <div class="level-container">
+        <!-- Nivel 1 -->
+        <div class="level-card level-1">
+            <div class="level-header">
+                <div class="level-icon" style="color: #ff5555;"><i class="fas fa-heart"></i></div>
+                <h2 class="level-title">Nivel 1: Barra de Vida</h2>
+            </div>
+            <div class="level-description">
+                <p>Función sin parámetros que muestra la vida restante del jugador después de recibir daño.</p>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="code-lang">Python</div>
+                    <button class="copy-btn">Copiar</button>
+                </div>
+                <pre class="code-content">import matplotlib.pyplot as plt
+
+def barra_vida():
+    vida = 100
+    daño = 40
+    restante = vida - daño
+    
+    plt.bar(['Vida'], [restante], color='green')
+    plt.title('Vida del Jugador')
+    plt.ylim(0, 100)
+    plt.show()
+
+barra_vida()</pre>
+            </div>
+            <div class="challenges">
+                <h3><i class="fas fa-tasks"></i> DESAFÍOS</h3>
+                <ul>
+                    <li>Cambia el valor del daño a otro número</li>
+                    <li>Agrega una barra que muestre el daño recibido</li>
+                    <li>Cambia a rojo cuando la vida es menor a 30</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Nivel 2 -->
+        <div class="level-card level-2">
+            <div class="level-header">
+                <div class="level-icon" style="color: #5555ff;"><i class="fas fa-chart-line"></i></div>
+                <h2 class="level-title">Nivel 2: Puntos por Nivel</h2>
+            </div>
+            <div class="level-description">
+                <p>Función con 1 parámetro que muestra la progresión de puntos según el nivel del jugador.</p>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="code-lang">Python</div>
+                    <button class="copy-btn">Copiar</button>
+                </div>
+                <pre class="code-content">import matplotlib.pyplot as plt
+
+def puntos(niveles):
+    puntos = []
+    for i in range(niveles):
+        puntos.append((i + 1) * 10)
+    
+    plt.plot(puntos, marker='o')
+    plt.title('Puntos por Nivel')
+    plt.xlabel('Nivel')
+    plt.ylabel('Puntos')
+    plt.grid(True)
+    plt.show()
+
+puntos(5)</pre>
+            </div>
+            <div class="challenges">
+                <h3><i class="fas fa-tasks"></i> DESAFÍOS</h3>
+                <ul>
+                    <li>Cambia los puntos por nivel a 20</li>
+                    <li>Usa plt.bar() en vez de plt.plot()</li>
+                    <li>Muestra puntos para 10 niveles</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Nivel 3 -->
+        <div class="level-card level-3">
+            <div class="level-header">
+                <div class="level-icon" style="color: #55ff55;"><i class="fas fa-running"></i></div>
+                <h2 class="level-title">Nivel 3: Movimiento del Personaje</h2>
+            </div>
+            <div class="level-description">
+                <p>Función con 1 parámetro que grafica el movimiento de un personaje basado en su velocidad.</p>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="code-lang">Python</div>
+                    <button class="copy-btn">Copiar</button>
+                </div>
+                <pre class="code-content">import matplotlib.pyplot as plt
+
+def movimiento(velocidad):
+    tiempo = [0, 1, 2, 3, 4]
+    distancia = [velocidad * t for t in tiempo]
+    
+    plt.plot(tiempo, distancia, marker='o')
+    plt.title('Movimiento del personaje')
+    plt.xlabel('Tiempo')
+    plt.ylabel('Distancia')
+    plt.grid(True)
+    plt.show()
+
+movimiento(2)</pre>
+            </div>
+            <div class="challenges">
+                <h3><i class="fas fa-tasks"></i> DESAFÍOS</h3>
+                <ul>
+                    <li>Prueba con velocidades diferentes</li>
+                    <li>Cambia la duración a 10 segundos</li>
+                    <li>Agrega otra línea con segunda velocidad</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Nivel 4 -->
+        <div class="level-card level-4">
+            <div class="level-header">
+                <div class="level-icon" style="color: #ffff55;"><i class="fas fa-fist-raised"></i></div>
+                <h2 class="level-title">Nivel 4: Poder de Ataque</h2>
+            </div>
+            <div class="level-description">
+                <p>Función con 2 parámetros que compara el poder de ataque de dos personajes.</p>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="code-lang">Python</div>
+                    <button class="copy-btn">Copiar</button>
+                </div>
+                <pre class="code-content">import matplotlib.pyplot as plt
+
+def ataque(personaje1, personaje2):
+    plt.bar(['Jugador 1', 'Jugador 2'], [personaje1, personaje2], 
+            color=['blue', 'orange'])
+    plt.title('Comparación de Ataque')
+    plt.ylabel('Poder')
+    plt.ylim(0, max(personaje1, personaje2) + 10)
+    plt.show()
+
+ataque(50, 70)</pre>
+            </div>
+            <div class="challenges">
+                <h3><i class="fas fa-tasks"></i> DESAFÍOS</h3>
+                <ul>
+                    <li>Invierte los valores</li>
+                    <li>Cambia los colores de las barras</li>
+                    <li>Agrega una tercera barra para "Jefe Final"</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Nivel 5 -->
+        <div class="level-card level-5">
+            <div class="level-header">
+                <div class="level-icon" style="color: #ff55ff;"><i class="fas fa-dice"></i></div>
+                <h2 class="level-title">Nivel 5: Probabilidad de Ganar</h2>
+            </div>
+            <div class="level-description">
+                <p>Función con 2 parámetros que muestra la probabilidad de ganar una batalla.</p>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="code-lang">Python</div>
+                    <button class="copy-btn">Copiar</button>
+                </div>
+                <pre class="code-content">import matplotlib.pyplot as plt
+
+def probabilidad(ganar, perder):
+    plt.pie([ganar, perder], labels=['Ganar', 'Perder'], 
+           autopct='%1.0f%%', colors=['green', 'red'])
+    plt.title('Probabilidad de Batalla')
+    plt.axis('equal')
+    plt.show()
+
+probabilidad(70, 30)</pre>
+            </div>
+            <div class="challenges">
+                <h3><i class="fas fa-tasks"></i> DESAFÍOS</h3>
+                <ul>
+                    <li>Cambia los valores a 50% y 50%</li>
+                    <li>Agrega un tercer resultado "Empatar"</li>
+                    <li>Usa colores diferentes para cada resultado</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Nivel 6 -->
+        <div class="level-card level-6">
+            <div class="level-header">
+                <div class="level-icon" style="color: #55ffff;"><i class="fas fa-wave-square"></i></div>
+                <h2 class="level-title">Nivel 6: Gráfica de Seno</h2>
+            </div>
+            <div class="level-description">
+                <p>Función sin argumentos que grafica la función seno matemática.</p>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="code-lang">Python</div>
+                    <button class="copy-btn">Copiar</button>
+                </div>
+                <pre class="code-content">import numpy as np
+import matplotlib.pyplot as plt
+
+def graficar_seno():
+    x = np.linspace(0, 2 * np.pi, 100)
+    y = np.sin(x)
+    
+    plt.plot(x, y, label='sin(x)', color='blue')
+    plt.title('Gráfica de sin(x)')
+    plt.xlabel('x')
+    plt.ylabel('sin(x)')
+    plt.grid(True)
+    plt.legend()
+    plt.show()
+
+graficar_seno()</pre>
+            </div>
+            <div class="challenges">
+                <h3><i class="fas fa-tasks"></i> DESAFÍOS</h3>
+                <ul>
+                    <li>Cambia el color a rojo y estilo punteado</li>
+                    <li>Añade la gráfica de cos(x)</li>
+                    <li>Amplía el intervalo a 4π</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Nivel 7 -->
+        <div class="level-card level-7">
+            <div class="level-header">
+                <div class="level-icon" style="color: #aa55ff;"><i class="fas fa-arrows-alt-v"></i></div>
+                <h2 class="level-title">Nivel 7: Seno con Amplitud</h2>
+            </div>
+            <div class="level-description">
+                <p>Función con parámetro de amplitud que modifica la función seno.</p>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="code-lang">Python</div>
+                    <button class="copy-btn">Copiar</button>
+                </div>
+                <pre class="code-content">import numpy as np
+import matplotlib.pyplot as plt
+
+def graficar_seno_amplitud(amplitud):
+    x = np.linspace(0, 2 * np.pi, 100)
+    y = amplitud * np.sin(x)
+    
+    plt.plot(x, y, label=f'{amplitud}·sin(x)', color='green')
+    plt.title(f'Gráfica de {amplitud}·sin(x)')
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.grid(True)
+    plt.legend()
+    plt.show()
+
+graficar_seno_amplitud(2)</pre>
+            </div>
+            <div class="challenges">
+                <h3><i class="fas fa-tasks"></i> DESAFÍOS</h3>
+                <ul>
+                    <li>Prueba con amplitudes de 0.5, 1, 3</li>
+                    <li>Compara dos curvas de distintas amplitudes</li>
+                    <li>Modifica para graficar amplitud * cos(x)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Nivel 8 -->
+        <div class="level-card level-8">
+            <div class="level-header">
+                <div class="level-icon" style="color: #ffaa55;"><i class="fas fa-wave-square"></i></div>
+                <h2 class="level-title">Nivel 8: Seno con Frecuencia</h2>
+            </div>
+            <div class="level-description">
+                <p>Función con parámetro de frecuencia que modifica la función seno.</p>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="code-lang">Python</div>
+                    <button class="copy-btn">Copiar</button>
+                </div>
+                <pre class="code-content">import numpy as np
+import matplotlib.pyplot as plt
+
+def graficar_seno_frecuencia(frecuencia):
+    x = np.linspace(0, 2 * np.pi, 100)
+    y = np.sin(frecuencia * x)
+    
+    plt.plot(x, y, label=f'sin({frecuencia}x)', color='purple')
+    plt.title(f'Gráfica de sin({frecuencia}x)')
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.grid(True)
+    plt.legend()
+    plt.show()
+
+graficar_seno_frecuencia(3)</pre>
+            </div>
+            <div class="challenges">
+                <h3><i class="fas fa-tasks"></i> DESAFÍOS</h3>
+                <ul>
+                    <li>Intenta con frecuencias 0.5, 2, 5</li>
+                    <li>Superpone sin(x), sin(2x), sin(3x)</li>
+                    <li>Grafica tan(frecuencia * x)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Nivel 9 -->
+        <div class="level-card level-9">
+            <div class="level-header">
+                <div class="level-icon" style="color: #55aaff;"><i class="fas fa-sync-alt"></i></div>
+                <h2 class="level-title">Nivel 9: Seno con Amplitud y Frecuencia</h2>
+            </div>
+            <div class="level-description">
+                <p>Función con dos parámetros que modifica amplitud y frecuencia del seno.</p>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="code-lang">Python</div>
+                    <button class="copy-btn">Copiar</button>
+                </div>
+                <pre class="code-content">import numpy as np
+import matplotlib.pyplot as plt
+
+def graficar_seno_af(amplitud, frecuencia):
+    x = np.linspace(0, 2 * np.pi, 100)
+    y = amplitud * np.sin(frecuencia * x)
+    
+    plt.plot(x, y, label=f'{amplitud}·sin({frecuencia}x)', color='orange')
+    plt.title(f'Gráfica de {amplitud}·sin({frecuencia}x)')
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.grid(True)
+    plt.legend()
+    plt.show()
+
+graficar_seno_af(1.5, 2)</pre>
+            </div>
+            <div class="challenges">
+                <h3><i class="fas fa-tasks"></i> DESAFÍOS</h3>
+                <ul>
+                    <li>Prueba con (2, 1), (0.5, 4)</li>
+                    <li>Dibuja dos funciones superpuestas</li>
+                    <li>Agrega gráfica de cos(frecuencia * x)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Nivel 10 -->
+        <div class="level-card level-10">
+            <div class="level-header">
+                <div class="level-icon" style="color: #55ffaa;"><i class="fas fa-code-compare"></i></div>
+                <h2 class="level-title">Nivel 10: Comparar Funciones Seno</h2>
+            </div>
+            <div class="level-description">
+                <p>Función con cuatro parámetros para comparar dos funciones seno diferentes.</p>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="code-lang">Python</div>
+                    <button class="copy-btn">Copiar</button>
+                </div>
+                <pre class="code-content">import numpy as np
+import matplotlib.pyplot as plt
+
+def comparar_senos(a1, f1, a2, f2):
+    x = np.linspace(0, 2 * np.pi, 100)
+    y1 = a1 * np.sin(f1 * x)
+    y2 = a2 * np.sin(f2 * x)
+    
+    plt.plot(x, y1, label=f'{a1}·sin({f1}x)', color='blue')
+    plt.plot(x, y2, label=f'{a2}·sin({f2}x)', color='red')
+    plt.title('Comparación de funciones seno')
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.grid(True)
+    plt.legend()
+    plt.show()
+
+comparar_senos(1, 1, 2, 3)</pre>
+            </div>
+            <div class="challenges">
+                <h3><i class="fas fa-tasks"></i> DESAFÍOS</h3>
+                <ul>
+                    <li>Usa (1, 2) y (0.5, 4)</li>
+                    <li>Sustituye sin por cos en una función</li>
+                    <li>Crea un gráfico con tres funciones</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Nivel 11 -->
+        <div class="level-card level-11">
+            <div class="level-header">
+                <div class="level-icon" style="color: #ff55aa;"><i class="fas fa-car-side"></i></div>
+                <h2 class="level-title">Nivel 11: Movimiento Rectilíneo</h2>
+            </div>
+            <div class="level-description">
+                <p>Función sin argumentos que modela movimiento rectilíneo uniforme.</p>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="code-lang">Python</div>
+                    <button class="copy-btn">Copiar</button>
+                </div>
+                <pre class="code-content">import numpy as np
+import matplotlib.pyplot as plt
+
+def movimiento_mru():
+    tiempo = np.linspace(0, 10, 100)
+    velocidad = 2  # m/s
+    posicion = velocidad * tiempo
+    
+    plt.plot(tiempo, posicion, label='x(t) = 2t', color='blue')
+    plt.title('Movimiento Rectilíneo Uniforme')
+    plt.xlabel('Tiempo (s)')
+    plt.ylabel('Posición (m)')
+    plt.grid(True)
+    plt.legend()
+    plt.show()
+
+movimiento_mru()</pre>
+            </div>
+            <div class="challenges">
+                <h3><i class="fas fa-tasks"></i> DESAFÍOS</h3>
+                <ul>
+                    <li>Cambia la velocidad a 5 m/s</li>
+                    <li>Agrega curva con velocidad negativa</li>
+                    <li>Muestra el punto en t=5 s</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Nivel 12 -->
+        <div class="level-card level-12">
+            <div class="level-header">
+                <div class="level-icon" style="color: #55aaaa;"><i class="fas fa-arrow-down"></i></div>
+                <h2 class="level-title">Nivel 12: Caída Libre</h2>
+            </div>
+            <div class="level-description">
+                <p>Función con un argumento (altura inicial) que modela caída libre.</p>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="code-lang">Python</div>
+                    <button class="copy-btn">Copiar</button>
+                </div>
+                <pre class="code-content">import numpy as np
+import matplotlib.pyplot as plt
+
+def caida_libre(h0):
+    g = 9.8  # m/s²
+    tiempo = np.linspace(0, np.sqrt(2 * h0 / g), 100)
+    altura = h0 - 0.5 * g * tiempo**2
+    
+    plt.plot(tiempo, altura, label=f'Caída desde {h0} m', color='green')
+    plt.title('Caída Libre')
+    plt.xlabel('Tiempo (s)')
+    plt.ylabel('Altura (m)')
+    plt.grid(True)
+    plt.legend()
+    plt.show()
+
+caida_libre(20)</pre>
+            </div>
+            <div class="challenges">
+                <h3><i class="fas fa-tasks"></i> DESAFÍOS</h3>
+                <ul>
+                    <li>Prueba con alturas de 10, 30, 50 m</li>
+                    <li>Añade velocidad instantánea</li>
+                    <li>Encuentra tiempo de impacto</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Nivel 13 -->
+        <div class="level-card level-13">
+            <div class="level-header">
+                <div class="level-icon" style="color: #ff6b6b;"><i class="fas fa-weight-hanging"></i></div>
+                <h2 class="level-title">Nivel 13: Ley de Hooke</h2>
+            </div>
+            <div class="level-description">
+                <p>Función con constante elástica que modela la ley de Hooke.</p>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="code-lang">Python</div>
+                    <button class="copy-btn">Copiar</button>
+                </div>
+                <pre class="code-content">import numpy as np
+import matplotlib.pyplot as plt
+
+def ley_de_hooke(k):
+    x = np.linspace(0, 0.5, 100)  # elongación en metros
+    F = k * x
+    
+    plt.plot(x, F, label=f'F = {k}·x', color='red')
+    plt.title('Ley de Hooke (Fuerza elástica)')
+    plt.xlabel('Elongación (m)')
+    plt.ylabel('Fuerza (N)')
+    plt.grid(True)
+    plt.legend()
+    plt.show()
+
+ley_de_hooke(100)</pre>
+            </div>
+            <div class="challenges">
+                <h3><i class="fas fa-tasks"></i> DESAFÍOS</h3>
+                <ul>
+                    <li>Prueba con k = 50, 200, 500 N/m</li>
+                    <li>Añade gráfica con masa colgando</li>
+                    <li>Compara dos muelles diferentes</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Nivel 14 -->
+        <div class="level-card level-14">
+            <div class="level-header">
+                <div class="level-icon" style="color: #cc55ff;"><i class="fas fa-bolt"></i></div>
+                <h2 class="level-title">Nivel 14: Energía Cinética</h2>
+            </div>
+            <div class="level-description">
+                <p>Función con masa y velocidad que calcula energía cinética.</p>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="code-lang">Python</div>
+                    <button class="copy-btn">Copiar</button>
+                </div>
+                <pre class="code-content">import matplotlib.pyplot as plt
+
+def energia_cinetica(masa, velocidad):
+    Ec = 0.5 * masa * velocidad**2
+    print(f"Energía cinética: {Ec} J")
+    
+    plt.bar(['Energía Cinética'], [Ec], color='purple')
+    plt.title('Energía Cinética')
+    plt.ylabel('Joules (J)')
+    plt.grid(True)
+    plt.show()
+
+energia_cinetica(2, 5)</pre>
+            </div>
+            <div class="challenges">
+                <h3><i class="fas fa-tasks"></i> DESAFÍOS</h3>
+                <ul>
+                    <li>Crea gráfica comparando varias masas</li>
+                    <li>Cambia velocidad por lista [2, 4, 6]</li>
+                    <li>Dibuja Ec respecto a v²</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Nivel 15 -->
+        <div class="level-card level-15">
+            <div class="level-header">
+                <div class="level-icon" style="color: #5555aa;"><i class="fas fa-plug"></i></div>
+                <h2 class="level-title">Nivel 15: Ley de Ohm</h2>
+            </div>
+            <div class="level-description">
+                <p>Función con resistencia y voltaje que calcula corriente eléctrica.</p>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="code-lang">Python</div>
+                    <button class="copy-btn">Copiar</button>
+                </div>
+                <pre class="code-content">import matplotlib.pyplot as plt
+
+def ley_ohm(R, V):
+    I = V / R  # Corriente (I = V/R)
+    print(f"Corriente: {I:.2f} A")
+    
+    plt.plot([0, V], [0, I], label=f'I = {I:.2f} A', color='orange')
+    plt.title('Ley de Ohm: I = V / R')
+    plt.xlabel('Voltaje (V)')
+    plt.ylabel('Corriente (A)')
+    plt.grid(True)
+    plt.legend()
+    plt.show()
+
+ley_ohm(10, 5)</pre>
+            </div>
+            <div class="challenges">
+                <h3><i class="fas fa-tasks"></i> DESAFÍOS</h3>
+                <ul>
+                    <li>Compara tres valores de resistencia</li>
+                    <li>Grafica I vs V para R fijo</li>
+                    <li>Muestra tabla de valores con bucle</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="game-progress">
+        <div class="progress-bar">
+            <div class="progress-fill">
+                <div class="progress-text">¡NIVEL MÁXIMO ALCANZADO! 15/15 EJERCICIOS</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="game-footer">
+        <p>¡Felicidades! Has completado todos los niveles de programación en Python</p>
+        <p><i class="fas fa-gamepad"></i> Python Game Functions v1.0</p>
+    </div>
+
+    <script>
+        // Función para copiar el código al portapapeles
+        document.querySelectorAll('.copy-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const codeBlock = this.parentElement.nextElementSibling;
+                const textToCopy = codeBlock.textContent;
+                
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    const originalText = this.textContent;
+                    this.textContent = '¡Copiado!';
+                    
+                    setTimeout(() => {
+                        this.textContent = originalText;
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Error al copiar: ', err);
+                });
+            });
+        });
+
+        // Efecto de iluminación en las tarjetas al pasar el ratón
+        document.querySelectorAll('.level-card').forEach(card => {
+            card.addEventListener('mousemove', function(e) {
+                const rect = this.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                this.style.setProperty('--mouse-x', `${x}px`);
+                this.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+    </script>
+</body>
+</html>
